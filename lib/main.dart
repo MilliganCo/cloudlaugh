@@ -40,18 +40,18 @@ class _LaughPageState extends State<LaughPage>
 
   // All laugh sounds bundled in assets/sounds/
   static const List<String> _laughSounds = [
-    'sounds/laugh_01.wav',
-    'sounds/laugh_02.wav',
-    'sounds/laugh_03.wav',
-    'sounds/laugh_04.wav',
-    'sounds/laugh_05.wav',
-    'sounds/laugh_06.wav',
-    'sounds/laugh_07.wav',
-    'sounds/laugh_08.wav',
-    'sounds/laugh_09.wav',
-    'sounds/laugh_10.wav',
-    'sounds/laugh_11.wav',
-    'sounds/laugh_12.wav',
+    'sounds/laugh_01.mp3',
+    'sounds/laugh_02.mp3',
+    'sounds/laugh_03.mp3',
+    'sounds/laugh_04.mp3',
+    'sounds/laugh_05.mp3',
+    'sounds/laugh_06.mp3',
+    'sounds/laugh_07.mp3',
+    'sounds/laugh_08.mp3',
+    'sounds/laugh_09.mp3',
+    'sounds/laugh_10.mp3',
+    'sounds/laugh_11.mp3',
+    'sounds/laugh_12.mp3',
   ];
 
   @override
