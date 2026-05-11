@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 void main() {
@@ -14,9 +15,12 @@ class CloudLaughApp extends StatelessWidget {
     return MaterialApp(
       title: 'CloudLaugh',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFFD700)),
-        useMaterial3: true,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF080808),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFFFFD600),
+          surface: Color(0xFF080808),
+        ),
       ),
       home: const LaughPage(),
     );
@@ -32,13 +36,12 @@ class LaughPage extends StatefulWidget {
 
 class _LaughPageState extends State<LaughPage>
     with SingleTickerProviderStateMixin {
+  static const _channel = MethodChannel('com.milliganco.cloudlaugh/widget');
+
   final AudioPlayer _player = AudioPlayer();
   final Random _random = Random();
   bool _isPlaying = false;
-  late AnimationController _shakeController;
-  late Animation<double> _shakeAnimation;
 
-  // All laugh sounds bundled in assets/sounds/
   static const List<String> _laughSounds = [
     'sounds/laugh_01.mp3',
     'sounds/laugh_02.mp3',
@@ -57,13 +60,6 @@ class _LaughPageState extends State<LaughPage>
   @override
   void initState() {
     super.initState();
-    _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _shakeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _shakeController, curve: Curves.elasticOut),
-    );
     _player.onPlayerComplete.listen((_) {
       if (mounted) setState(() => _isPlaying = false);
     });
@@ -72,7 +68,6 @@ class _LaughPageState extends State<LaughPage>
   @override
   void dispose() {
     _player.dispose();
-    _shakeController.dispose();
     super.dispose();
   }
 
@@ -80,96 +75,88 @@ class _LaughPageState extends State<LaughPage>
     final sound = _laughSounds[_random.nextInt(_laughSounds.length)];
     await _player.stop();
     setState(() => _isPlaying = true);
-    _shakeController
-      ..reset()
-      ..forward();
     await _player.play(AssetSource(sound));
+  }
+
+  Future<void> _requestAddWidget() async {
+    try {
+      final supported = await _channel.invokeMethod<bool>('pinWidget');
+      if (supported == false && mounted) {
+        _showSnack('Зажми рабочий стол → Виджеты → CloudLaugh');
+      }
+    } on PlatformException {
+      if (mounted) _showSnack('Зажми рабочий стол → Виджеты → CloudLaugh');
+    }
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg, style: const TextStyle(color: Color(0xFFFFD600))),
+        backgroundColor: const Color(0xFF161616),
+        behavior: SnackBarBehavior.floating,
+        shape: const RoundedRectangleBorder(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: const Color(0xFF080808),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _shakeAnimation,
-                builder: (context, child) {
-                  final offset = _isPlaying
-                      ? 12 * sin(_shakeAnimation.value * pi * 6)
-                      : 0.0;
-                  return Transform.translate(
-                    offset: Offset(offset, 0),
-                    child: child,
-                  );
-                },
-                child: const Text(
-                  '😂',
-                  style: TextStyle(fontSize: 100),
-                ),
-              ),
-              const SizedBox(height: 48),
-              GestureDetector(
-                onTap: _playRandomLaugh,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 220,
-                  height: 220,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: _isPlaying
-                          ? [const Color(0xFFFF6B35), const Color(0xFFFF1744)]
-                          : [const Color(0xFFFFD700), const Color(0xFFFF8C00)],
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: GestureDetector(
+                  onTapDown: (_) => _playRandomLaugh(),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 120),
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _isPlaying
+                          ? const Color(0xFFFFD600)
+                          : Colors.transparent,
+                      border: Border.all(
+                        color: const Color(0xFFFFD600),
+                        width: 1.5,
+                      ),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (_isPlaying
-                                ? const Color(0xFFFF1744)
-                                : const Color(0xFFFFD700))
-                            .withOpacity(0.5),
-                        blurRadius: _isPlaying ? 40 : 20,
-                        spreadRadius: _isPlaying ? 10 : 2,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _isPlaying
-                            ? Icons.volume_up_rounded
-                            : Icons.play_arrow_rounded,
-                        size: 90,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _isPlaying ? 'ХА-ХА-ХА!' : 'СМЕЙСЯ!',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+                    child: Center(
+                      child: Text(
+                        'HA',
+                        style: TextStyle(
+                          color: _isPlaying
+                              ? const Color(0xFF080808)
+                              : const Color(0xFFFFD600),
+                          fontSize: 52,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
+                          letterSpacing: 6,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
-              Text(
-                '${_laughSounds.length} видов смеха',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
-                  fontSize: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 44),
+              child: GestureDetector(
+                onTap: _requestAddWidget,
+                child: const Text(
+                  '+ добавить виджет',
+                  style: TextStyle(
+                    color: Color(0xFF888888),
+                    fontSize: 13,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
