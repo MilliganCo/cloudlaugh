@@ -9,8 +9,8 @@ android/local.properties
 android/.gradle/
 android/captures/
 android/app/.cxx/
-*.apk
-*.aab
+build/**/*.apk
+build/**/*.aab
 
 # IntelliJ/Android Studio
 *.iml
