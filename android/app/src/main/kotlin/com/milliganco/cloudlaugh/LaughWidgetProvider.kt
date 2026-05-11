@@ -19,6 +19,7 @@ class LaughWidgetProvider : AppWidgetProvider() {
             R.raw.laugh_04, R.raw.laugh_05, R.raw.laugh_06,
             R.raw.laugh_07, R.raw.laugh_08, R.raw.laugh_09,
             R.raw.laugh_10, R.raw.laugh_11, R.raw.laugh_12,
+            R.raw.laugh_13, R.raw.laugh_14, R.raw.laugh_15,
         )
     }
 

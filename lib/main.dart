@@ -55,6 +55,9 @@ class _LaughPageState extends State<LaughPage>
     'sounds/laugh_10.mp3',
     'sounds/laugh_11.mp3',
     'sounds/laugh_12.mp3',
+    'sounds/laugh_13.mp3',
+    'sounds/laugh_14.mp3',
+    'sounds/laugh_15.mp3',
   ];
 
   @override
