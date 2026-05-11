@@ -1,0 +1,27 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+# Android
+android/local.properties
+android/.gradle/
+android/captures/
+android/app/.cxx/
+*.apk
+*.aab
+
+# IntelliJ/Android Studio
+*.iml
+.idea/
+.gradle/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Other
+*.log
